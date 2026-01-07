@@ -17,7 +17,7 @@ export default function AuthProvider({ children }) {
   });
 
   const queryClient = useQueryClient();
-
+  console.log("acces", accessToken)
   const refreshTokenAction = useCallback(async () => {
     try {
       const res = await refreshAccessToken();
@@ -67,6 +67,7 @@ export default function AuthProvider({ children }) {
     async function fetchUser() {
       try {
         const res = await getAuthUser(accessToken);
+        console.log("res", res)
         if (res.status === 200) {
           setUser(res.data.data);
         }
