@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import { createServer } from "http";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
-import cors from "cors"
+import cors from "cors";
 import {
   globalErrorHandler,
   catchNotFoundRoute,
@@ -12,9 +12,9 @@ import { rateLimiter } from "./src/middleware/rateLimit.js";
 
 //import api routes
 import userRoutes from "./src/routes/user.route.js";
-import bookingRoutes from "./src/routes/booking.routes.js"
-import PaymentRoutes from "./src/routes/payment.routes.js"
-import adminRoutes from "./src/routes/admin.routes.js"
+import bookingRoutes from "./src/routes/booking.routes.js";
+import PaymentRoutes from "./src/routes/payment.routes.js";
+import adminRoutes from "./src/routes/admin.routes.js";
 
 //initialize express
 const app = express();
@@ -28,12 +28,12 @@ const httpServer = createServer(app);
 //5- response is finally sent to the client
 app.use(
   cors({
-    origin: ["http://localhost:4200"], //permits domains specified to talk to server
+    origin: ["http://localhost:4200", "https://clientlaundry-wash.vercel.app"], //permits domains specified to talk to server
     credentials: true, // allows cookies to be sent to client
     methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"], //permitted http methods
     optionsSuccessStatus: 200, //default status code
   })
-)
+);
 app.use(cookieParser()); //initialize
 app.use(express.json({ limit: "25mb" })); //parses our response body in a max size no greater than 25mb
 app.use(express.urlencoded({ extended: true, limit: "25mb" })); //useful for getting large form submission in encoded format such as bas64 strings
