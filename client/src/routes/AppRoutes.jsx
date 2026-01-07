@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router";
 import AuthLayout from "../layout/AuthLayout";
 import Home from "../pages/home/Home";
-import Rootlayout from "../layout/Rootlayout";
+import RootLayout from "@/layout/RootLayout"
 import Signup from "../pages/auth/Signup";
 import Login from "../pages/auth/Login";
 import ForgetLayout from "@/layout/ForgetLayout";
@@ -83,7 +83,7 @@ export default function AppRoutes() {
          errorElement: <ErrorBoundary />,
       element: (
         <Suspense fallback={<LazySpinner />}>
-          <Rootlayout />
+          <RootLayout />
         </Suspense>
       ),
       children: [

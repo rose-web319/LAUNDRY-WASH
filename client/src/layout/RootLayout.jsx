@@ -7,7 +7,7 @@ import Reviews from "@/pages/home/Reviews";
 import Effort from "@/pages/home/Effort";
 import Footer from "@/pages/home/Footer";
 
-export default function Rootlayout() {
+export default function RootLayout() {
   return <>
   <Nav/>
   <Outlet/>
