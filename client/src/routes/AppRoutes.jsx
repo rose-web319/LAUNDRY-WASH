@@ -1,7 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router";
 import AuthLayout from "../layout/AuthLayout";
 import Home from "../pages/home/Home";
-import RootLayout from "@/layout/RootLayout"
 import Signup from "../pages/auth/Signup";
 import Login from "../pages/auth/Login";
 import ForgetLayout from "@/layout/ForgetLayout";
@@ -29,6 +28,7 @@ import AdminOrders from "@/pages/adminorders/AdminOrders";
 import Revenue from "@/pages/dashboard/adminRevenue/Revenue";
 import Users from "@/pages/dashboard/users/Users"
 import ErrorBoundary from"@/components/ErrorBoundary"
+import RootLayout from "@/layout/RootLayout";
 
 
 
