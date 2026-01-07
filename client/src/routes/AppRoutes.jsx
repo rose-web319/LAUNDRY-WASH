@@ -19,7 +19,6 @@ import BookingSummary from "@/pages/bookLaundry/BookingSummary";
 import AdminLayout from "@/layout/AdminLayout";
 import ProfileLayout from "@/layout/ProfileLayout";
 import PaymentOptions from "@/pages/paymentOption/PaymentOptions";
-import ProfileInfo from "@/Profile/profileinfo";
 
 import Order from "@/pages/orders/Order";
 import Payments from "@/Payments/Payments";
@@ -29,6 +28,7 @@ import Revenue from "@/pages/dashboard/adminRevenue/Revenue";
 import Users from "@/pages/dashboard/users/Users"
 import ErrorBoundary from"@/components/ErrorBoundary"
 import RootLayout from "@/layout/RootLayout";
+import ProfileInfo from "@/Profile/ProfileInfo";
 
 
 
