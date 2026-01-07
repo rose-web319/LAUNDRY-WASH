@@ -18,7 +18,7 @@ export const getBookings = async (searchParams, accessToken) => {
   params.append("status", status);
   return await axiosClient.get(`/booking/get?${params.toString()}`, {
     headers: {
-      Authorization: `Bearers ${accessToken}`,
+      Authorization: `Bearer ${accessToken}`,
     },
   });
 };

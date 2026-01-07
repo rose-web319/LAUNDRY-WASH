@@ -18,7 +18,7 @@ export const getPayments = async (searchParams, accessToken) => {
   params.append("status", status);
   return await axiosClient.get(`/payment/get?${params.toString()}`, {
     headers: {
-      Authorization: `Bearers ${accessToken}`,
+      Authorization: `Bearer ${accessToken}`,
     },
   });
 };
