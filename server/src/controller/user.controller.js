@@ -314,7 +314,7 @@ export const refreshToken = async (req, res, next) => {
     if (!user) {
       return next(responseHandler.notFoundResponse("User not found"));
     }
-    const getNewToken = signToken(user._id, user.role);
+    const getNewToken = sendToken(user);
     if (!getNewToken) {
       throw new Error("Failed to create a new token");
     }

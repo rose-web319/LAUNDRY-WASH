@@ -23,7 +23,7 @@ export const sendToken = (user) => {
   if (!user) return;
   const token = signToken(user._id, user.role); //_id comes from mongodb
   //create a cookie to store refreshToken in oreder to prevent browser access on client
-  const isProduction = process.env.MODE_ENV === "production";
+  const isProduction = process.env.NODE_ENV === "production";
   const cookieOptions = {
     httpOnly: true, //cookie is not accessible in javascript
     secure: isProduction, //send cookie over HTTPS only in prod environment
