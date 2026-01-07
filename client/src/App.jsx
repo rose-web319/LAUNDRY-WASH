@@ -6,6 +6,7 @@ import AuthProvider from "./store/AuthProvider";
 // import AuthProvider from "./store/AuthProvider";
 
 const queryClient = new QueryClient();
+
 function App() {
   return (
     <>

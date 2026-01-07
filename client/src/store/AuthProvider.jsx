@@ -6,7 +6,6 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
 
-
 export default function AuthProvider({ children }) {
   const [accessToken, setAccessToken] = useState(null);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
@@ -17,7 +16,7 @@ export default function AuthProvider({ children }) {
   });
 
   const queryClient = useQueryClient();
-  console.log("acces", accessToken)
+  console.log("acces", accessToken);
   const refreshTokenAction = useCallback(async () => {
     try {
       const res = await refreshAccessToken();
@@ -38,12 +37,10 @@ export default function AuthProvider({ children }) {
 
   useEffect(() => {
     let needsRefresh = false;
-
     if (!accessToken) {
       refreshTokenAction();
       return;
     }
-
     try {
       const decodedToken = jwtDecode(accessToken);
       const expirationTime = decodedToken?.exp ?? 0;
@@ -64,10 +61,11 @@ export default function AuthProvider({ children }) {
 
     //If token is valid and not expiring soon, fetch user
     setIsAuthenticating(true);
+
     async function fetchUser() {
       try {
         const res = await getAuthUser(accessToken);
-        console.log("res", res)
+        console.log("res", res);
         if (res.status === 200) {
           setUser(res.data.data);
         }
@@ -80,11 +78,8 @@ export default function AuthProvider({ children }) {
       }
     }
     fetchUser();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accessToken]);
-
-
-
 
   //refresh accessToken
   // const refresh = useQuery({
@@ -116,7 +111,7 @@ export default function AuthProvider({ children }) {
   //     }
   //     return res;
   //   },
-    //enabled: !!accessToken, //run only when there is an accesstoken
+  //enabled: !!accessToken, //run only when there is an accesstoken
   // });
 
   const mutation = useMutation({
@@ -138,7 +133,7 @@ export default function AuthProvider({ children }) {
   if (isAuthenticating) {
     return <LazySpinner />;
   }
-console.log(user)
+  console.log(user);
   const contextValue = {
     accessToken,
     user,

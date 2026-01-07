@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../model/user.model.js";
 import responseHandler from "../utils/responseHandler.js";
-import { sendToken, signToken } from "../utils/token.js";
+import { sendToken } from "../utils/token.js";
 import mailService from "./mail.controller.js";
 import {
   uploadToCloudinary,
@@ -47,7 +47,7 @@ export const registerUser = async (req, res, next) => {
     const verificationLink = `${process.env.CLIENT_URL}/verify-email/${newUser._id}/${verifyToken}`;
 
     process.nextTick(() => {
-      mailService.sendRegistrationEmail(newUser, verificationLink);
+      mailService.sendRegistrationMail(newUser, verificationLink);
     });
     // send cookie in response
     res.cookie("refreshToken", refreshToken, cookieOptions);
@@ -110,7 +110,7 @@ export const forgotPassword = async (req, res, next) => {
     user.passwordTokenExpires = passwordTokenExpires;
     await user.save();
     process.nextTick(() => {
-      mailService.sendPasswordResetEmail(user, resetPasswordLink);
+      mailService.sendPasswordMail(user, resetPasswordLink);
     });
     return responseHandler.successResponse(
       res,

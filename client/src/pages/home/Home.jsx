@@ -2,7 +2,7 @@ import { Link } from "react-router";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function Home() {
-    const { user } = useAuth();
+  const { user } = useAuth();
   return (
     <>
       <div className="bg-(--landingPgBg) py-30 pb-5">
@@ -21,8 +21,7 @@ export default function Home() {
                 Book Laundry
               </Link>
               {!user && (
-                <Link className="text-(--signupBtnBg)  border border-(----signupBtnBg) rounded-full px-7 py-2"
-                >
+                <Link className="text-(--signupBtnBg)  border border-(----signupBtnBg) rounded-full px-7 py-2">
                   Log in
                 </Link>
               )}
