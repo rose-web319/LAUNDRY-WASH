@@ -137,7 +137,7 @@ export default function AuthProvider({ children }) {
   if (isAuthenticating) {
     return <LazySpinner />;
   }
-
+console.log(user)
   const contextValue = {
     accessToken,
     user,
