@@ -71,7 +71,7 @@ export default function BookLaundry() {
   }
 
   const onSubmit = async (data) => {
-    
+
 
     if (
       !data.pickUpPhone.startsWith("+234") ||
@@ -132,14 +132,14 @@ export default function BookLaundry() {
                   <h3>Service Type</h3>
                   <div className="bg-(--cardBg) px-2 py-4 mt-3 rounded-lg">
                     <fieldset className="fieldset">
-                      <label className="fieldset-legend text-white text-sm">
+                      <label className="fieldset-legend text-sm">
                         Select Service
                       </label>
                       <select
-                        className="select w-full bg-white text-black"
+                        className="select w-full text-black rounded-sm bg-white"
                         {...register("serviceType")}
                       >
-                        <option value="" disabled selected>
+                        <option value="" disabled selected >
                           Pick a service type
                         </option>
                         {serviceTypeData.map((service, index) => (
@@ -290,7 +290,7 @@ export default function BookLaundry() {
                   <h3>Add item</h3>
                   <div className="bg-(--cardBg) px-2 py-4 mt-3 rounded-lg">
                     <div>
-                      <div className="grid grid-cols-3 items-center justify-center gap-5">
+                      <div className="grid grid-cols-12 items-center justify-center gap-5">
                         {/* first box */}
                         <div className="col-span-12 md:col-span-6">
                           <label htmlFor="" className="text-xs">

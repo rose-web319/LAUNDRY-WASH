@@ -1,8 +1,9 @@
 import { Link } from "react-router";
 import Logo from "../../components/Logo";
 import { ArrowUp } from "lucide-react";
-import LogoTwo from "@/components/LogoTwo";
+
 import { useAuth } from "@/hooks/useAuth";
+import LogoThree from "@/components/LogoThree";
 
 export default function Footer() {
   const { user } = useAuth();
@@ -11,7 +12,7 @@ export default function Footer() {
       <div className="bg-(--navBg) text-white">
         <div className="container mx-auto py-5">
           <div className="flex flex-col text-center md:flex-row gap-5 justify-between items-center md:w-[85%]">
-            {user ? <LogoTwo /> : <Logo />}
+            {user ? <LogoThree /> : <Logo />}
             <Link>Home</Link>
             <Link>About Us</Link>
             <Link>Services</Link>
