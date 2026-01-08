@@ -1,16 +1,16 @@
 import { sendMail } from "../utils/mail.js";
 import {
-  bookingTemplate,
   welcomeTemplate,
   resetPasswordTemplate,
+  bookingTemplate,
 } from "../utils/emailTemplate.js";
 
 const mailService = {
-  sendRegistrationMail: async (user, verificationLink) => {
-    const emailBody = welcomeTemplate(user.fullname, verificationLink);
+  sendRegistrationMail: async (user, verifcationLink) => {
+    const emailBody = welcomeTemplate(user.fullname, verifcationLink);
     await sendMail({
       to: user.email,
-      subject: "verify your account",
+      subject: "Verify your account",
       html: emailBody,
     });
   },

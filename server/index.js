@@ -11,34 +11,34 @@ import {
 import { rateLimiter } from "./src/middleware/rateLimit.js";
 
 //import api routes
-import userRoutes from "./src/routes/user.route.js";
+import userRoutes from "./src/routes/user.routes.js";
 import bookingRoutes from "./src/routes/booking.routes.js";
-import PaymentRoutes from "./src/routes/payment.routes.js";
+import paymentRoutes from "./src/routes/payment.routes.js";
 import adminRoutes from "./src/routes/admin.routes.js";
 
 //initialize express
 const app = express();
 const httpServer = createServer(app);
 
-//middlewares- are functions that have access to the req, and the res object, they can perform any task specified before the output is sent to the client.
-//1- request is recieved by the server
-//2- request is paased through the middleware specified
-//3- route handler processes the request
-//4- responses is sent back through the middleware
-//5- response is finally sent to the client
+//middlewares - functions that have access to the req, and res object, they can perform any task specified before the output is sent to the client.
+//1 - request is received by the server
+//2 - req is passed through the middleware specified
+//3 - route handler processes the request
+//4 - responses is sent back through the middleware
+//5 - response is finally sent to the client
 app.use(
   cors({
-    origin: ["http://localhost:4200", "https://clientlaundry-wash.vercel.app"], //permits domains specified to talk to server
+    origin: ["http://localhost:4200", "https://clientlaundry-wash.vercel.app"],
     credentials: true, // allows cookies to be sent to client
     methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"], //permitted http methods
-    optionsSuccessStatus: 200, //default status code
+    optionsSuccessStatus: 200,
   })
 );
-app.use(cookieParser()); //initialize
-app.use(express.json({ limit: "25mb" })); //parses our response body in a max size no greater than 25mb
-app.use(express.urlencoded({ extended: true, limit: "25mb" })); //useful for getting large form submission in encoded format such as bas64 strings
+app.use(cookieParser()); //initialize cookies in app
+app.use(express.json({ limit: "25mb" })); //parses our response body in a max size no greater than  25mb
+app.use(express.urlencoded({ extended: true, limit: "25mb" })); //useful for getting large form submission in encoded format such as base64 strings
 app.use(rateLimiter(100));
-app.disable("x-powered-by"); //disables tech stack used when sending response to client
+app.disable("x-powered-by"); //disables tech stack used when sending response to the client
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev")); //morgan is used to log http requests to the terminal
 }
@@ -59,10 +59,10 @@ app.get("/", (req, res) => {
   });
 });
 
-//assemble api route
+//assemble api routes
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/booking", bookingRoutes);
-app.use("/api/v1/payment", PaymentRoutes);
+app.use("/api/v1/payment", paymentRoutes);
 app.use("/api/v1/admin", adminRoutes);
 
 //handle app errors
@@ -77,14 +77,13 @@ app.use((err, req, res, next) => {
 const connectOptions = {
   dbName: "LaundryWash",
   serverSelectionTimeoutMs:
-    process.env.NODE_ENV === "development" ? 45000 : 10000, //max time to wait for server to be selected (45sec in dev or 10s in prod). If no server selection, a server timeout error is thrown
+    process.env.NODE_ENV === "development" ? 45000 : 10000, //max time to wait for server to be selected (45sec in dev or 10s in prod). If no server selection, a server timeoutn error is thrown
   socketTimeoutMs: 30000, //time before socket timeout due to inactivity, useful to avoid hanging connections
   retryWrites: true, //enables automatic retry of some write operations like insert or update a document
   retryReads: true, //enables automatic retry of read operations
-  maxPoolSize: 100, //max num of connections in mongodb connection pool, helps to manage concurrent requests
-  minPoolSize: 1, //minimum num of connections maintained by mongodb pool
+  maxPoolSize: 100, //max num of connections in mongodb connection pool, it helps to manage concurrent requests
+  minPoolSize: 1, // minimum num of connections maintained by mongodb pool
 };
-
 const connectToDb = async () => {
   try {
     const conn = await mongoose.connect(process.env.MONGO_URI, connectOptions);
@@ -100,13 +99,13 @@ const connectToDb = async () => {
     const gracefulShutdown = async () => {
       await mongoose.connection.close();
       console.log("Mongodb connection closed via app termination");
-      process.exit(0);
+      process.exit(0); //exit the node process
     };
-    process.on("SIGINT", gracefulShutdown); // signal interruption ctrl + c
-    process.on("SIGTERM", gracefulShutdown); //signal termination
+    process.on("SIGINT", gracefulShutdown); //signal interruption ctrl + c
+    process.on("SIGTERM", gracefulShutdown); //signal term
     return conn;
   } catch (error) {
-    console.error("Mondodb connection failed", error.message);
+    console.error("Mongodb connection failed", error.message);
     process.exit(1); //exit the process, 1 usually indicates error/failure
   }
 };
@@ -129,13 +128,12 @@ const startServer = async () => {
         `Server running in ${process.env.NODE_ENV} mode on port ${PORT}`
       );
     });
-
-    //handle promkise rejections
+    //handle promise rejections
     process.on("unhandledRejection", (err) => {
       console.error("UNHANDLED REJECTION! shutting down...");
       console.error(err.name, err.message);
       //close server gracefully
-      server.closeIdleConnections(() => {
+      server.close(() => {
         console.log("Process terminated due to unhandled rejection");
       });
     });
@@ -149,11 +147,12 @@ const startServer = async () => {
     };
     //handle termination signals
     process.on("SIGINT", shutdown);
-    process.on("SIGNTERM", shutdown);
+    process.on("SIGTERM", shutdown);
   } catch (error) {
     console.error(`Failed to start server: ${error.message}`);
     process.exit(1);
   }
 };
 
+//start server
 startServer();

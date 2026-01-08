@@ -1,6 +1,5 @@
 import jwt from "jsonwebtoken";
 
-
 export const signToken = (id, role) => {
   const accessToken = jwt.sign(
     { id, role },
@@ -21,15 +20,14 @@ export const signToken = (id, role) => {
 
 export const sendToken = (user) => {
   if (!user) return;
-  const token = signToken(user._id, user.role); //_id comes from mongodb
-  //create a cookie to store refreshToken in oreder to prevent browser access on client
+  const token = signToken(user._id, user.role);
   const isProduction = process.env.NODE_ENV === "production";
   const cookieOptions = {
-    httpOnly: true, //cookie is not accessible in javascript
-    secure: isProduction, //send cookie over HTTPS only in prod environment
-    maxAge: 7 * 24 * 60 * 60 * 1000, //cookie is valid 7 days
-    path: "/", //cookie is accessible on the specified api endpoint
-    sameSite: isProduction ? "none" : "lax", // is required whe the cookie is used on diff domains - server and client runs on different host/port. We want to adjust the cross-site request policy ensuring the secure transfer of the cookie to a diff domain when in production mode (HTTPS), Setting lax enables the cookie to ork in dev mode.
+    httpOnly: true,
+    secure: isProduction,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    path: "/",
+    sameSite: isProduction ? "none" : "lax",
   };
   return {
     accessToken: token.accessToken,
@@ -37,4 +35,3 @@ export const sendToken = (user) => {
     cookieOptions,
   };
 };
-

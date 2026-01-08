@@ -6,7 +6,6 @@ export const rateLimiter = (num) =>
     max: num, //attempts within 15min window
     message: "Too many requests, please try again later",
     standardHeaders: true, //return rate limit info in headers
-    
     keyGenerator: (req) => {
       //use ip address + user agent to identify clients
       return `${ipKeyGenerator(req.ip)}-${

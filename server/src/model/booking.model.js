@@ -53,7 +53,7 @@ const bookingSchema = new Schema(
       phone: {
         type: String,
         trim: true,
-        minlength: [14, "Phone should not exceed 14 charcters"],
+        minlength: [14, "Phone should not exceed 14 characters"],
       },
     },
     items: {
@@ -96,6 +96,6 @@ const bookingSchema = new Schema(
 
 bookingSchema.index({ status: 1 });
 bookingSchema.index({ isPaid: 1 });
-bookingSchema.index({ "pickUp.date": 1, "pi kUp.time": 1 });
+bookingSchema.index({ "pickUp.date": 1, "pickUp.time": 1 });
 
 export default mongoose.models.Booking || model("Booking", bookingSchema);

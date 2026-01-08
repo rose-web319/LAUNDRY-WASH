@@ -1,7 +1,5 @@
 import Payment from "../model/payment.model.js";
 import Booking from "../model/booking.model.js";
-import User from "../model/user.model.js";
-import mailService from "./mail.controller.js";
 import responseHandler from "../utils/responseHandler.js";
 
 export const createPayment = async (req, res, next) => {

@@ -3,8 +3,11 @@ import Booking from "../model/booking.model.js";
 import Payment from "../model/payment.model.js";
 import responseHandler from "../utils/responseHandler.js";
 
-export const dashBoardStats = async (req, res, next) => {
-  const { page = 1, limit = 10, status } = req.query;
+export const dashboardStats = async (req, res, next) => {
+  const { page = 1, limit = 10, query, status } = req.query;
+  const sanitizeQuery = query
+    ? query.toLowerCase().replace(/[^\w\s]/gi, "")
+    : "";
   try {
     const ordersCount = await Booking.countDocuments();
     const usersCount = await User.countDocuments();
@@ -12,8 +15,17 @@ export const dashBoardStats = async (req, res, next) => {
     const paymentsTotal = paymentData.reduce((acc, cv) => acc + cv.amount, 0);
     //fetch recent users and payments as a single array data
     const users = await User.find().lean().sort({ createdAt: -1 });
-    const paymentsQuery = status ? { status } : {};
-    const payments = await Payment.find(paymentsQuery)
+    const getUsers = await User.find({
+      $or: [{ fullname: { $regex: sanitizeQuery, $options: "i" } }],
+    }).lean();
+    const matchUserIds = getUsers.map((user) => user._id);
+    // const paymentsQuery = status ? { status } : {};
+    const payments = await Payment.find({
+      ...(sanitizeQuery && {
+        $or: [{ userId: { $in: matchUserIds } }],
+      }),
+      ...(status && { status: status }),
+    })
       .lean()
       .populate("bookingId", "serviceType time")
       .populate("userId", "fullname email phone")
@@ -30,12 +42,13 @@ export const dashBoardStats = async (req, res, next) => {
       (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
     );
 
-    //paginate recentactivities data
+    //paginate recentacvtivites data
     const pageNum = parseInt(page);
     const limitNum = parseInt(limit);
     const skip = (pageNum - 1) * limitNum;
     const total = recentActivities.length;
     const totalPages = Math.ceil(total / limitNum);
+
     const paginatedData = recentActivities.slice(skip, skip + limitNum);
 
     return responseHandler.successResponse(res, {
@@ -74,12 +87,14 @@ export const getAllUsers = async (req, res, next) => {
       $or: [{ fullname: { $regex: sanitizeQuery, $options: "i" } }],
     });
     const totalUsers = await User.countDocuments();
+
     //recent user stats
     const now = new Date();
     const startOfCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const startOfPreviousMonth = new Date(
       now.getFullYear(),
-      now.getMonth() - 1
+      now.getMonth() - 1,
+      1
     );
     const recentUsers = await User.find({
       createdAt: {
@@ -88,7 +103,6 @@ export const getAllUsers = async (req, res, next) => {
       },
       isEmailVerified: true,
     }).lean();
-
     return responseHandler.successResponse(res, {
       totalUsers,
       recentUsers: recentUsers.length,
@@ -112,8 +126,8 @@ export const getAdminOrders = async (req, res, next) => {
     limit = 10,
     query,
     status,
-    startDate,
     time,
+    startDate,
     endDate,
   } = req.query;
   const sanitizeQuery = query
@@ -137,7 +151,7 @@ export const getAdminOrders = async (req, res, next) => {
         ? {
             "pickUp.date": {
               ...(sanitizeStartDate && {
-                $gte: sanitizeStartDate.setHours(0, 0, 0, 0),
+                $gte: new Date(sanitizeStartDate.setHours(0, 0, 0, 0)),
               }),
               ...(sanitizeEndDate && {
                 $lte: new Date(sanitizeEndDate.setHours(23, 59, 59, 999)),
@@ -151,7 +165,6 @@ export const getAdminOrders = async (req, res, next) => {
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit);
-
     const total = await Booking.countDocuments({
       ...(sanitizeQuery && {
         $or: [{ userId: { $in: matchUserIds } }],
@@ -162,7 +175,7 @@ export const getAdminOrders = async (req, res, next) => {
         ? {
             "pickUp.date": {
               ...(sanitizeStartDate && {
-                $gte: sanitizeStartDate.setHours(0, 0, 0, 0),
+                $gte: new Date(sanitizeStartDate.setHours(0, 0, 0, 0)),
               }),
               ...(sanitizeEndDate && {
                 $lte: new Date(sanitizeEndDate.setHours(23, 59, 59, 999)),
@@ -211,7 +224,7 @@ export const updateOrderDelivery = async (req, res, next) => {
     }
     const booking = await Booking.findById(bookingId);
     if (!booking) {
-      return next(responseHandler.notFoundResponse("Booking not found", 404));
+      return next(responseHandler.notFoundResponse("Booking not found", 400));
     }
     //check if order is paid
     if (!booking.isPaid) {
@@ -222,7 +235,7 @@ export const updateOrderDelivery = async (req, res, next) => {
         )
       );
     }
-    //update order delivery status
+    // update order delivery status
     if (booking.isDelivered) {
       booking.isDelivered = false;
       booking.status = "in-progress";
@@ -234,9 +247,7 @@ export const updateOrderDelivery = async (req, res, next) => {
     return responseHandler.successResponse(
       res,
       booking,
-      `{${
-        booking.isDelivered ? "Delivery confirmed" : "Delivery not confirmed"
-      }}`
+      `${booking.isDelivered ? "Delivery confirmed" : "Delvery not confirmed"}`
     );
   } catch (error) {
     next(error);
@@ -251,7 +262,7 @@ export const updatePaymentStatus = async (req, res, next) => {
     }
     const booking = await Booking.findById(bookingId);
     if (!booking) {
-      return next(responseHandler.notFoundResponse("Booking not found", 404));
+      return next(responseHandler.notFoundResponse("Booking not found", 400));
     }
     //check if order is paid
     if (booking.isPaid) {
@@ -262,11 +273,10 @@ export const updatePaymentStatus = async (req, res, next) => {
         )
       );
     }
-    //update payment status
+    // update payment status
     booking.isPaid = true;
     booking.status = "in-progress";
     await booking.save();
-
     return responseHandler.successResponse(res, booking, "Payment confirmed");
   } catch (error) {
     next(error);
@@ -280,11 +290,9 @@ export const getOrdersRevenue = async (req, res, next) => {
     query,
     paymentMethod,
     status,
-    time,
     startDate,
     endDate,
   } = req.query;
-
   const sanitizeQuery = query
     ? query.toLowerCase().replace(/[^\w\s]/gi, "")
     : "";
@@ -317,7 +325,7 @@ export const getOrdersRevenue = async (req, res, next) => {
           ? {
               paidAt: {
                 ...(sanitizeStartDate && {
-                  $gte: sanitizeStartDate.setHours(0, 0, 0, 0),
+                  $gte: new Date(sanitizeStartDate.setHours(0, 0, 0, 0)),
                 }),
                 ...(sanitizeEndDate && {
                   $lte: new Date(sanitizeEndDate.setHours(23, 59, 59, 999)),

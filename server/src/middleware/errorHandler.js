@@ -26,7 +26,7 @@ const sendErrorProd = (err, res) => {
     };
     return res.status(err.statusCode || 500).json(errResponse);
   }
-  //programming errors/unknown errors - dont send to client
+  //programiing errors/unknown errors - dont send to client
   console.error("ERROR", err);
   return res.status(err.statusCode).json({
     status: "error",
@@ -42,7 +42,7 @@ const handleJWTError = () => {
 };
 const handleJWTExpiredError = () => {
   return responseHandler.unauthorizedResponse(
-    "Your token has expired. Please log in to gain access"
+    "Your token has expired! Please log in to gain access"
   );
 };
 
@@ -63,6 +63,6 @@ export const globalErrorHandler = (err, req, res, next) => {
 //catch 404 error routes
 export const catchNotFoundRoute = (req, res) => {
   return responseHandler.notFoundResponse(
-    `Cannot find ${req.originalUrl} on this sever`
+    `Cannot find ${req.originalUrl} on this server`
   );
 };

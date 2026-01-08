@@ -34,7 +34,7 @@ export const welcomeTemplate = (fullname, verificationLink) => `
       <body>
           <div class="container">
               <div class="header">
-                  <h1 style="font-weight: bold; font-size: 24px; text-align: center;">Welcome to LaundryWash- Glad to have you!</h1>
+                  <h1 style="font-weight: bold; font-size: 24px; text-align: center;">Welcome to LaundryWash</h1>
               </div>
               <div class="content">
                   <h1><strong>Hello ${fullname}</strong></h1>
@@ -44,13 +44,14 @@ export const welcomeTemplate = (fullname, verificationLink) => `
                   <p>This link will expire in 1 hour.</p>
               </div>
               <div class="footer">
-                  <p>©️ ${new Date().getFullYear()} LaundryWash - Glad to have you!. All rights reserved.</p>
+                  <p>© ${new Date().getFullYear()} LaundryWash - Glad to have you!. All rights reserved.</p>
               </div>
           </div>
       </body>
       </html>
       `;
-      export const resetPasswordTemplate = (fullname, passwordLink) => `
+
+export const resetPasswordTemplate = (fullname, passwordLink) => `
       <!DOCTYPE html>
       <html>
       <head>
@@ -91,19 +92,18 @@ export const welcomeTemplate = (fullname, verificationLink) => `
               <div class="content">
                   <h1><strong>Hello ${fullname}</strong></h1>
                   <p>You have requested to reset your password, please follow the link below!</p>
-                  
                   <a href="${passwordLink}" style="font-weight: bold; font-size: 20px; color: #4a90e2;">${passwordLink}</a>
-                  <p>This link will expire in 15 minutes, Do not share to anyone.</p>
+                  <p>This link will expire in 15 minutes. Do not share with anyone.</p>
               </div>
               <div class="footer">
-                  <p>©️ ${new Date().getFullYear()} LaundryWash - Glad to have you!. All rights reserved.</p>
+                  <p>© ${new Date().getFullYear()} LaundryWash - Glad to have you!. All rights reserved.</p>
               </div>
           </div>
       </body>
       </html>
       `;
 
-      export const bookingTemplate = (fullname, booking) => `
+export const bookingTemplate = (fullname, booking) => `
       <!DOCTYPE html>
       <html>
       <head>

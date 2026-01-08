@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../model/user.model.js";
 import responseHandler from "../utils/responseHandler.js";
-import { sendToken, signToken } from "../utils/token.js";
+import { sendToken } from "../utils/token.js";
 import mailService from "./mail.controller.js";
 import {
   uploadToCloudinary,
@@ -11,7 +11,7 @@ import {
 } from "../utils/cloudinary.js";
 
 export const registerUser = async (req, res, next) => {
-  //req.body handles form collection passed from client side
+  //req.body handles form collection passed from the client
   const { fullname, email, password, phone } = req.body;
   try {
     //check if email already exists
@@ -22,18 +22,16 @@ export const registerUser = async (req, res, next) => {
     if (emailExists)
       return next(responseHandler.errorResponse("Email already exists", 400));
     if (phoneExists)
-      return next(
-        responseHandler.errorResponse("Phone number already exists", 400)
-      );
-    //if user is new proceed to create a new user
+      return next(responseHandler.errorResponse("Phone already exists", 400));
+    //if user email is new, proceed to creating user
     //handle verification token generation
     const verifyToken = crypto.randomBytes(16).toString("hex"); //generate unique random 16 digit numbers
-    const verifyTokenExpires = new Date(Date.now() + 3600000); //token expires in 1 hour
-    //handle passwword encryption
+    const verifyTokenExpires = new Date(Date.now() + 3600000); //1hr
+    //handle passsword encryption
     const salt = await bcrypt.genSalt(10);
     const hashPassword = await bcrypt.hash(password, salt);
-    //save user to database
-    const newUser = await User.create({
+    //save the user to database
+    const user = await User.create({
       fullname,
       email,
       password: hashPassword,
@@ -42,20 +40,18 @@ export const registerUser = async (req, res, next) => {
       phone,
     });
     //generate access and refresh token
-    const { accessToken, refreshToken, cookieOptions } = sendToken(newUser);
-    //process.nextTick()- this allows not block synchronous operations- the api response sant wait for the email sent
-    const verificationLink = `${process.env.CLIENT_URL}/verify-email/${newUser._id}/${verifyToken}`;
-
+    const { accessToken, refreshToken, cookieOptions } = sendToken(user);
+    //process.nextTick - this allows not block synchronous operations-  the api response wont wait for the eamil to be sent
+    const verifcationLink = `${process.env.CLIENT_URL}/verify-email/${user._id}/${verifyToken}`;
     process.nextTick(() => {
-      mailService.sendRegistrationMail(newUser, verificationLink);
+      mailService.sendRegistrationMail(user, verifcationLink);
     });
-    // send cookie in response
     res.cookie("refreshToken", refreshToken, cookieOptions);
-    //send response to client
+    //return json resposne
     return responseHandler.successResponse(
       res,
       accessToken,
-      "User registered successfully, please check your email for verification",
+      "Registration successfull, please check your email for verfication",
       201
     );
   } catch (error) {
@@ -66,23 +62,21 @@ export const registerUser = async (req, res, next) => {
 export const loginUser = async (req, res, next) => {
   const { email, password } = req.body;
   try {
-    //find user in database via email
+    //find user in db via the email
     const user = await User.findOne({ email }).select("+password"); //select will include the password field, it is hidden by default
     if (!user) {
-      return next(responseHandler.notFoundResponse("Account not foound"));
+      return next(responseHandler.notFoundResponse("Account not found"));
     }
     //handle password decryption
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect) {
-      return next(
-        responseHandler.unauthorizedResponse("incorrect credentials")
-      );
+      return next(responseHandler.unauthorizedResponse("Incorrect password"));
     }
     //generate access and refresh token
     const { accessToken, refreshToken, cookieOptions } = sendToken(user);
-    // send cookie in response
+    //send the cookie
     res.cookie("refreshToken", refreshToken, cookieOptions);
-    //return json response
+    //return json resposne
     return responseHandler.successResponse(
       res,
       accessToken,
@@ -99,12 +93,12 @@ export const forgotPassword = async (req, res, next) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return next(responseHandler.notFoundResponse("account not found"));
+      return next(responseHandler.notFoundResponse("Account not found"));
     }
     //generate resetlink
     const passwordToken = crypto.randomBytes(16).toString("hex");
-    const passwordTokenExpires = new Date(Date.now() + 900000); //15 mins
-    const resetPasswordLink = `${process.env.CLIENT_URL}/auth/reset-password?userId${user._id}&token=${passwordToken}`;
+    const passwordTokenExpires = new Date(Date.now() + 900000); //15mins
+    const resetPasswordLink = `${process.env.CLIENT_URL}/auth/reset-password?userId=${user._id}&token=${passwordToken}`;
     //update user details
     user.passwordToken = passwordToken;
     user.passwordTokenExpires = passwordTokenExpires;
@@ -115,7 +109,7 @@ export const forgotPassword = async (req, res, next) => {
     return responseHandler.successResponse(
       res,
       null,
-      "Reset Password link has been sent to your email"
+      "Reset password link has been sent to your email"
     );
   } catch (error) {
     next(error);
@@ -123,7 +117,7 @@ export const forgotPassword = async (req, res, next) => {
 };
 
 export const resetPassword = async (req, res, next) => {
-  //get user and token query params
+  //get user and token from query params
   const userId = req.query.userId;
   const token = req.query.token;
   const { newPassword, confirmPassword } = req.body;
@@ -131,7 +125,7 @@ export const resetPassword = async (req, res, next) => {
     if (newPassword !== confirmPassword) {
       return next(responseHandler.errorResponse("Passwords do not match", 400));
     }
-    //find user via id
+    //find user via the user Id
     const user = await User.findById(userId).select(
       "+passwordToken +passwordTokenExpires"
     );
@@ -164,7 +158,7 @@ export const resetPassword = async (req, res, next) => {
     return responseHandler.successResponse(
       res,
       null,
-      "Password reset successful"
+      "Password reset successfully"
     );
   } catch (error) {
     next(error);
@@ -173,7 +167,7 @@ export const resetPassword = async (req, res, next) => {
 
 export const logoutUser = async (req, res, next) => {
   try {
-    res.clearCookie("refreshToken", "", {
+    res.cookie("refreshToken", "", {
       maxAge: 0,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -202,9 +196,9 @@ export const resendVerifyToken = async (req, res, next) => {
   );
   try {
     if (!user) {
-      return next(responseHandler, notFoundResponse("Account not found"));
+      return next(responseHandler.notFoundResponse("Account not found"));
     }
-    //check if a  user is already verified
+    //check if user is already verified
     if (user.isEmailVerified) {
       return next(responseHandler.errorResponse("Account already verified"));
     }
@@ -215,9 +209,9 @@ export const resendVerifyToken = async (req, res, next) => {
     user.verifyToken = verifyToken;
     user.verifyTokenExpires = verifyTokenExpires;
     await user.save();
-    const verificationLink = `${process.env.CLIENT_URL}/verify-email/${user._id}/${verifyToken}`;
+    const verifcationLink = `${process.env.CLIENT_URL}/verify-email/${user._id}/${verifyToken}`;
     process.nextTick(() => {
-      mailService.sendRegistrationMail(user, verificationLink);
+      mailService.sendRegistrationMail(user, verifcationLink);
     });
     return responseHandler.successResponse(
       res,
@@ -236,7 +230,7 @@ export const verifyAccount = async (req, res, next) => {
     if (!userId || !verifyToken) {
       return next(
         responseHandler.errorResponse(
-          "UserId params or verifyToken is missing",
+          "UserId params or verifyToken params is missing",
           400
         )
       );
@@ -247,7 +241,9 @@ export const verifyAccount = async (req, res, next) => {
     );
     //check if token matches the same as received in mail
     if (user.verifyToken !== verifyToken) {
-      responseHandler.errorResponse("Invalid verification token", 400);
+      return next(
+        responseHandler.errorResponse("Invalid verification token", 400)
+      );
     }
     //check token expiry
     if (user.verifyTokenExpires < new Date()) {
@@ -314,12 +310,18 @@ export const refreshToken = async (req, res, next) => {
     if (!user) {
       return next(responseHandler.notFoundResponse("User not found"));
     }
-    const getNewToken = signToken(user._id, user.role);
+    const getNewToken = sendToken(user);
     if (!getNewToken) {
-      throw new Error("Failed to create a new token");
+      throw new Error("Failed to create new token");
     }
-    //destructure accesstoken and cookieOptions from the neq token
-    const { accessToken } = getNewToken;
+    //destructure accesstoken, refreshToken and cookieOptions from new token
+    const {
+      accessToken,
+      refreshToken: newRefreshToken,
+      cookieOptions,
+    } = getNewToken;
+    // Set the new refreshToken cookie - this is critical for mobile devices
+    res.cookie("refreshToken", newRefreshToken, cookieOptions);
     return responseHandler.successResponse(
       res,
       accessToken,
@@ -338,12 +340,12 @@ export const uploadAvatar = async (req, res, next) => {
     if (!avatar) {
       return responseHandler.errorResponse("No file received", 400);
     }
-    //check if user has avatar already
+    //check if user has an avatar already
     const user = await User.findById(userId);
     const currentAvatar = user.avatar;
     const currentAvatarId = user.avatarId;
     if (currentAvatar) {
-      //if avatar exist, then we delete so we can replace
+      //if avatar exisits, then  we delete so we can replace it
       await deleteFromCloudinary(currentAvatarId);
     }
     //replace with new image
@@ -359,7 +361,7 @@ export const uploadAvatar = async (req, res, next) => {
     return responseHandler.successResponse(
       res,
       user,
-      "Avatar upload successful"
+      "Avatar upload successfull"
     );
   } catch (error) {
     next(error);

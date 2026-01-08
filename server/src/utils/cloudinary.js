@@ -43,14 +43,13 @@ export const uploadToCloudinary = async (file, options = {}) => {
       file,
       defaultOptions
     );
-
     return {
       url: uploadResponse.secure_url,
       public_id: uploadResponse.public_id,
     };
   } catch (error) {
     console.log(error);
-    throw new Error(`Upload failed: ${error.error.message}`);
+    throw new Error(`Upload failed: ${error.errror.message}`);
   }
 };
 

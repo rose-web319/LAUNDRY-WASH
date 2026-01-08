@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const validateRegisterUserSchema = z.object({
   fullname: z.string().min(5, {
-    message: "Fullname must be at 5 charcters long",
+    message: "Full name must be at 5 characters long",
   }),
   email: z.email({ message: "Email is required" }),
   password: z
@@ -23,7 +23,6 @@ export const validateRegisterUserSchema = z.object({
     message: "Phone number is incomplete",
   }),
 });
-
 export const validateLoginUserSchema = z.object({
   email: z.email({ message: "Email is required" }),
   password: z
@@ -45,8 +44,9 @@ export const validateLoginUserSchema = z.object({
 export const validateForgotPasswordSchema = z.object({
   email: z.email({ message: "Email is required" }),
 });
+
 export const validateResetPasswordSchema = z.object({
-   newPassword: z
+  newPassword: z
     .string()
     .min(8, {
       message: "Password must be at least 8 characters long",
@@ -60,8 +60,7 @@ export const validateResetPasswordSchema = z.object({
     .regex(/[!@#$%^&*(),.?":{}|<>]/, {
       message: "Password must contain at least one special character",
     }),
-
-     confirmPassword: z
+  confirmPassword: z
     .string()
     .min(8, {
       message: "Password must be at least 8 characters long",
@@ -78,14 +77,15 @@ export const validateResetPasswordSchema = z.object({
 });
 
 export const validateUpdateUserSchema = z.object({
-  email: z.email({ messages: "Email is required" }),
+  email: z.email({ message: "Email is required" }),
   fullname: z.string().min(5, {
     message: "Full name must be at 5 characters long",
   }),
   phone: z.string().min(12, {
-    message: "Phone number is incomplete"
-  })
-})
+    message: "Phone number is incomplete",
+  }),
+});
+
 
 export const validateBookingSchema = z.object({
   serviceType: z
@@ -103,7 +103,7 @@ export const validateBookingSchema = z.object({
   time: z
     .enum(["10:00 AM", "12:00 PM", "2:00 PM"])
     .refine((value) => value !== "", {
-      message: "Please select a service type",
+      message: "Please select a pickup time",
     }),
   deliveryAddress: z.string().min(5),
   deliveryPhone: z.string().min(14),

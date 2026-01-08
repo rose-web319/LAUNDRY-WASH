@@ -26,9 +26,9 @@ const userSchema = new Schema(
     phone: {
       type: String,
       trim: true,
-      maxlength: [14, "Phone should not exceed 13 characters"],
+      minlength: [14, "Phone should not exceed 14 characters"],
       required: true,
-      unique: true,
+      unique: [true, "Phone number should be new"],
     },
     role: {
       type: String,
@@ -62,5 +62,7 @@ const userSchema = new Schema(
     timestamps: true,
   }
 );
+
+userSchema.index({ fullname: 1 });
 
 export default mongoose.models.User || model("User", userSchema);

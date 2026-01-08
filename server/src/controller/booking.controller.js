@@ -11,6 +11,7 @@ const GARMENT_KEYS = [
   "duvet",
   "specialItem",
 ];
+
 const itemsPerCost = {
   shirt: 900,
   trouser: 700,
@@ -39,6 +40,13 @@ export const createBooking = async (req, res, next) => {
   const userId = req.user.id;
   try {
     const user = await User.findById(userId).lean();
+    if (!user.isEmailVerified) {
+      return next(
+        responseHandler.errorResponse(
+          "Please verify your email before booking a service"
+        )
+      );
+    }
     const items = {
       shirt: { qty: req.body.shirt },
       trouser: { qty: req.body.trouser },
@@ -81,9 +89,8 @@ export const createBooking = async (req, res, next) => {
 
 export const getBookings = async (req, res, next) => {
   const userId = req.user.id;
-  const { page = 1, limit = 2, status= "active" } = req.query;
+  const { page = 1, limit = 2, status = "active" } = req.query;
   try {
-    // const filter = { userId };
     const bookings = await Booking.find({
       userId: userId,
       ...(status && { status: status }),
@@ -96,7 +103,6 @@ export const getBookings = async (req, res, next) => {
       userId: userId,
       ...(status && { status: status }),
     });
-
     return responseHandler.successResponse(res, {
       bookings,
       pagination: {

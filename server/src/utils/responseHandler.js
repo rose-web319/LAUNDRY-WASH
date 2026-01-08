@@ -1,14 +1,14 @@
-//classes are like templates for creating javascript objects. They inherit the existing properties and are initialized with constructor.
+//classes are like templates for creating javascript objects. They inherit the existing properies and are initialized with a constructor.
 //a constructor is a method for creating and initializing an object instance of a class, while super keyword is used to call and invoke the parent class which then gives access to its properties and methods
 
 class AppError extends Error {
   constructor(message, statusCode = 500) {
     super(message); //invoke message to be passed
-    this.statusCode = statusCode; //reference statuscode received from the error constructor
+    this.statusCode = statusCode; //reference statusCode received from the error constuctor
     const statusCodeString = statusCode.toString();
     this.status = statusCodeString.startsWith("4") ? "fail" : "error";
     this.success = false; //this will always be false cos we are handling error response
-    this.isOperational = true; //distinguish btw error types - such as server shutdown, or connection, validation, authentication errors. These are operational errors. But programmers such as bugs, syntax errors, or type errors should not be sent to the client.
+    this.isOperational = true; //distinguish btw error types - such as server shutdown, or connection, validation, authentication  errors. These are are operational errors. But programmers such as bugs, syntax errors, or type errors should not be sent to the client.
   }
 }
 

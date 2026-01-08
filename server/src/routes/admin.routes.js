@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { authenticate, authorizedRoles} from "../middleware/authenticate.js";
+import { authenticate, authorizedRoles } from "../middleware/authenticate.js";
 import {
-  dashBoardStats,
+  dashboardStats,
   getAllUsers,
   getAdminOrders,
   updateOrderDelivery,
@@ -11,7 +11,7 @@ import {
 
 const router = Router();
 
-router.get("/stats", authenticate, authorizedRoles("admin"), dashBoardStats);
+router.get("/stats", authenticate, authorizedRoles("admin"), dashboardStats);
 router.get("/get_users", authenticate, authorizedRoles("admin"), getAllUsers);
 router.get(
   "/get_orders",
@@ -19,21 +19,18 @@ router.get(
   authorizedRoles("admin"),
   getAdminOrders
 );
-
 router.patch(
   "/update_delivery_status/:bookingId",
   authenticate,
   authorizedRoles("admin"),
   updateOrderDelivery
 );
-
 router.patch(
   "/update_payment_status/:bookingId",
   authenticate,
   authorizedRoles("admin"),
   updatePaymentStatus
 );
-
 router.get(
   "/revenue_stats",
   authenticate,

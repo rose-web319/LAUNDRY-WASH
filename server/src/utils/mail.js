@@ -19,13 +19,14 @@ const transporter = nodemailer.createTransport({
 const verifyEmailConnection = async () => {
   try {
     await transporter.verify();
-    console.info("Email service connection verified");
+    console.log("Email service connection verified");
   } catch (error) {
     console.error("Failed to connect to email service", {
       error: error.message,
       code: error.code,
       stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
     });
+    throw new Error("Email service connection failed");
   }
 };
 verifyEmailConnection().catch(console.error);

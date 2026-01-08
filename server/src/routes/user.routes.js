@@ -18,7 +18,7 @@ import {
   validateLoginUserSchema,
   validateResetPasswordSchema,
   validateForgotPasswordSchema,
-  validateUpdateUserSchema
+  validateUpdateUserSchema,
 } from "../utils/formValidations.js";
 import { rateLimiter } from "../middleware/rateLimit.js";
 import { authenticate } from "../middleware/authenticate.js";
@@ -39,6 +39,7 @@ router.post(
   validateFormData(validateLoginUserSchema),
   loginUser
 );
+
 router.post(
   "/forgot-password",
   rateLimiter(5),
@@ -63,19 +64,19 @@ router.patch(
   "/verify/:userId/:verifyToken",
   rateLimiter(5),
   authenticate,
-  verifyAccount,
-  
+  verifyAccount
 );
 
-router.patch("/update-user", 
+router.patch(
+  "/update-user",
   rateLimiter(5),
   authenticate,
   validateFormData(validateUpdateUserSchema),
   updateUserDetails
 );
 
-router.post("/refresh-token", authenticate, refreshToken);
+router.post("/refresh-token", refreshToken);
 
-router.patch("/upload-avatar", rateLimiter(5), authenticate, uploadAvatar)
+router.patch("/upload-avatar", rateLimiter(5), authenticate, uploadAvatar);
 
 export default router;

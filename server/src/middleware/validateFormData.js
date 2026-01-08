@@ -1,6 +1,5 @@
 import { ZodError } from "zod";
 
-
 export const validateFormData = (schema) => (req, res, next) => {
   try {
     //receive the form from the req.body and transform via zod
@@ -13,7 +12,7 @@ export const validateFormData = (schema) => (req, res, next) => {
         message: `${issue.message}`,
       }));
       return res.status(400).json({
-        error: "Error Validating form data",
+        error: "Error validating form data",
         details: errorMsg,
       });
     }
