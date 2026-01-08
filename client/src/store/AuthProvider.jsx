@@ -4,7 +4,6 @@ import { getAuthUser, logoutUser, refreshAccessToken } from "@/api/auth";
 import { useCallback, useState, useEffect } from "react";
 import LazySpinner from "@/components/LazySpinner";
 import { toast } from "react-toastify";
-import { jwtDecode } from "jwt-decode";
 import { safeGetItem, safeSetItem, safeRemoveItem } from "@/utils/storage";
 
 export default function AuthProvider({ children }) {
@@ -47,25 +46,6 @@ export default function AuthProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    let needsRefresh = false;
-    try {
-      const decodedToken = jwtDecode(accessToken);
-      const expirationTime = decodedToken?.exp ?? 0;
-      const currentTime = Date.now();
-      const refreshBuffer = 2 * 60 * 1000;
-      const msUntilExpiry = expirationTime * 1000 - currentTime;
-      if (msUntilExpiry <= refreshBuffer) {
-        needsRefresh = true;
-      }
-    } catch {
-      needsRefresh = true;
-    }
-
-    if (needsRefresh) {
-      refreshTokenAction();
-      return;
-    }
-
     // If token is valid & not expiring soon, fetch user
     setIsAuthenticating(true);
     async function fetchUser() {
