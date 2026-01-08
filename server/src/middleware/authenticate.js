@@ -3,7 +3,6 @@ import jwt from "jsonwebtoken";
 
 export const authenticate = async (req, res, next) => {
   let token;
-
   try {
     //check if token exists via req.headers
     if (
@@ -16,7 +15,7 @@ export const authenticate = async (req, res, next) => {
     if (!token) {
       return next(
         responseHandler.unauthorizedResponse(
-          "unauthorized, login to gain access"
+          "Unauthorized, login to gain access"
         )
       );
     }
@@ -26,13 +25,12 @@ export const authenticate = async (req, res, next) => {
         token,
         process.env.JWT_ACCESS_TOKEN_SECRET_KEY
       );
-      //assign re.user to verifyToken
       req.user = verifyToken;
       return next();
     } catch (error) {
       return next(
         responseHandler.unauthorizedResponse(
-          "unable to authenticate, log in to agin access"
+          "Unable to authenticate, log in to gain access"
         )
       );
     }
@@ -40,6 +38,8 @@ export const authenticate = async (req, res, next) => {
     return next(error);
   }
 };
+
+//check user role
 
 export const authorizedRoles = (...roles) => {
   return (req, res, next) => {
@@ -50,6 +50,6 @@ export const authorizedRoles = (...roles) => {
         )
       );
     }
-    next(); ///carry on with the task
+    next(); //carry on with the task
   };
 };
