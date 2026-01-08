@@ -206,7 +206,7 @@ export default function BookLaundry() {
                             type="date"
                             name=""
                             id=""
-                            className="bg-white mt-2 py-2 rounded-sm text-black px-2"
+                            className="w-full bg-white mt-2 py-2 rounded-sm text-black px-2"
                             {...register("date")}
                           />
                           {errors?.date && (
