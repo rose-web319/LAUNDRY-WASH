@@ -118,7 +118,7 @@ export default function Signup() {
           </span>
           <span className="text-white mt-4 text-center">
             Already have an account?{" "}
-            <Link to="/auth/login" className="text-(--signupBtnBg)">
+            <Link to="/login" className="text-(--signupBtnBg)">
               Sign in
             </Link>
           </span>

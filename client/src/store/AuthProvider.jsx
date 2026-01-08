@@ -5,18 +5,29 @@ import LazySpinner from "@/components/LazySpinner";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
+import { safeGetItem, safeSetItem, safeRemoveItem } from "@/utils/storage";
 
 export default function AuthProvider({ children }) {
-  const [accessToken, setAccessToken] = useState(null);
+  const [accessToken, setAccessToken] = useState(() => {
+    return safeGetItem("laundryBookingToken") || null;
+  });
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [user, setUser] = useState(null);
   const [bookingForm, setBookingForm] = useState(() => {
-    const persistedState = localStorage.getItem("laundryBookingForm");
+    const persistedState = safeGetItem("laundryBookingForm");
     return persistedState ? JSON.parse(persistedState) : null;
   });
 
   const queryClient = useQueryClient();
-  console.log("acces", accessToken);
+
+  useEffect(() => {
+    if (accessToken) {
+      safeSetItem("laundryBookingToken", accessToken);
+    } else {
+      safeRemoveItem("laundryBookingToken");
+    }
+  }, [accessToken]);
+
   const refreshTokenAction = useCallback(async () => {
     try {
       const res = await refreshAccessToken();
@@ -37,10 +48,12 @@ export default function AuthProvider({ children }) {
 
   useEffect(() => {
     let needsRefresh = false;
+
     if (!accessToken) {
       refreshTokenAction();
       return;
     }
+
     try {
       const decodedToken = jwtDecode(accessToken);
       const expirationTime = decodedToken?.exp ?? 0;
@@ -61,11 +74,9 @@ export default function AuthProvider({ children }) {
 
     //If token is valid and not expiring soon, fetch user
     setIsAuthenticating(true);
-
     async function fetchUser() {
       try {
         const res = await getAuthUser(accessToken);
-        console.log("res", res);
         if (res.status === 200) {
           setUser(res.data.data);
         }
@@ -133,7 +144,7 @@ export default function AuthProvider({ children }) {
   if (isAuthenticating) {
     return <LazySpinner />;
   }
-  console.log(user);
+
   const contextValue = {
     accessToken,
     user,

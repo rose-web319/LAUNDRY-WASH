@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../model/user.model.js";
 import responseHandler from "../utils/responseHandler.js";
-import { sendToken } from "../utils/token.js";
+import { sendToken, signToken } from "../utils/token.js";
 import mailService from "./mail.controller.js";
 import {
   uploadToCloudinary,
@@ -217,7 +217,7 @@ export const resendVerifyToken = async (req, res, next) => {
     await user.save();
     const verificationLink = `${process.env.CLIENT_URL}/verify-email/${user._id}/${verifyToken}`;
     process.nextTick(() => {
-      mailService.sendRegistrationEmail(user, verificationLink);
+      mailService.sendRegistrationMail(user, verificationLink);
     });
     return responseHandler.successResponse(
       res,
@@ -314,7 +314,7 @@ export const refreshToken = async (req, res, next) => {
     if (!user) {
       return next(responseHandler.notFoundResponse("User not found"));
     }
-    const getNewToken = sendToken(user);
+    const getNewToken = signToken(user._id, user.role);
     if (!getNewToken) {
       throw new Error("Failed to create a new token");
     }

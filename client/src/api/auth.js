@@ -17,9 +17,13 @@ export const getAuthUser = async (accessToken) => {
 };
 
 export const refreshAccessToken = async () => {
-  return await axiosClient.post("/user/refresh-token", {}, {
-    withCredentials: true, //ensure cookies is sent along with request
-  });
+  return await axiosClient.post(
+    "/user/refresh-token",
+    {},
+    {
+      withCredentials: true, //ensure cookies is sent along with request
+    }
+  );
 };
 
 export const forgotPassword = async (formData) => {
@@ -72,8 +76,8 @@ export const verifyToken = async ({ userId, verifyTokenLink, accessToken }) => {
   );
 };
 
-export const updateProfile = async ({ accessToken, formData }) => {
-  return await axiosClient.patch("/update-user", formData, {
+export const updateProfile = async ({ formData, accessToken }) => {
+  return await axiosClient.patch("/user/update-user", formData, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
@@ -86,4 +90,4 @@ export const uploadAvatar = async ({ formData, accessToken }) => {
       Authorization: `Bearer ${accessToken}`,
     },
   });
-}; 
+};

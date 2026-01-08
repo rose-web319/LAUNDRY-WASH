@@ -5,6 +5,7 @@ import { createPayment } from "@/api/payment";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useRef, useCallback } from "react";
 
+
 export default function Paystack({
   bookingId,
   total,

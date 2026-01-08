@@ -21,7 +21,7 @@ export default function Home() {
                 Book Laundry
               </Link>
               {!user && (
-                <Link className="text-(--signupBtnBg)  border border-(----signupBtnBg) rounded-full px-7 py-2">
+                <Link to="login" className="text-(--signupBtnBg)  border border-(----signupBtnBg) rounded-full px-7 py-2">
                   Log in
                 </Link>
               )}
