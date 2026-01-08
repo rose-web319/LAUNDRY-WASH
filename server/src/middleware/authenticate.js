@@ -37,7 +37,7 @@ export const authenticate = async (req, res, next) => {
       );
     }
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };
 
